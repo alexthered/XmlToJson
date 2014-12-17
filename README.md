@@ -1,4 +1,4 @@
-qvariantmap-tinyxml
+XmlToJson
 ===================
 
-Utility to convert between tree-like structure QVariantMap of QT library and TinyXMLElement 
+C++ utilities to convert from XML to Json file and vice versa
