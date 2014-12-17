@@ -16,23 +16,24 @@ include(${QT_USE_FILE})
 add_definitions(${QT_DEFINITIONS})
 
 #include source file in top folder
-file (GLOB TOP_SRCS
-     ${CMAKE_CURRENT_SOURCE_DIR}/*.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
+file (GLOB XML_TO_JSON_SRCS
+     ${CMAKE_CURRENT_SOURCE_DIR}/xmltojson.cpp
      )
 
+file (GLOB JSON_TO_XML_SRCS
+     ${CMAKE_CURRENT_SOURCE_DIR}/jsontoxml.cpp
+     )
 
 #add XML and Json library
 add_subdirectory( ${CMAKE_CURRENT_SOURCE_DIR}/tinyXml )
 add_subdirectory( ${CMAKE_CURRENT_SOURCE_DIR}/json)
-
-#include source file in all folder
-set(PROJECT_SRCS
-    ${TOP_SRCS}
-    ${TINYXML_SRCS}
-    ${JSON_SRCS}
-    )
     
-# Create output folder with build type (release/debug)
-add_executable(${PROJECT_NAME} ${PROJECT_SRCS})
-target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES})
+# Set location for binary files
+set( EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin )
+
+# Create output folder
+add_executable(XmlToJson ${XML_TO_JSON_SRCS} ${TINYXML_SRCS} ${JSON_SRCS})
+target_link_libraries(XmlToJson ${QT_LIBRARIES})
+
+add_executable(JsonToXml ${JSON_TO_XML_SRCS} ${TINYXML_SRCS} ${JSON_SRCS})
+target_link_libraries(JsonToXml ${QT_LIBRARIES})
