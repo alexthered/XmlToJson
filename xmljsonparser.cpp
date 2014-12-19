@@ -1,20 +1,13 @@
 #include "xmljsonparser.h"
 
 #include <QtDebug>
+#include <QDateTime>
+#include <QFile>
+#include <QTextStream>
+
 using namespace QtJson;
 
-/* read json file to a QString */
-QString XmlJsonParser::readJsonFile(const QString in_file) {
-    QFile f(in_file);
-    if (!f.open(QFile::ReadOnly | QFile::Text)) {
-        qFatal("Cannot open the json file!");
-        return QString();
-    } else {
-        QTextStream in(&f);
-        return in.readAll();
-    }
-}
-
+//read Json file to QVariant
 QVariant XmlJsonParser::readJson(const QString in_file)
 {
     QVariant json_tree;
@@ -29,6 +22,47 @@ QVariant XmlJsonParser::readJson(const QString in_file)
     json_tree = Json::parse(json);
 
     return json_tree;
+}
+
+//write the content of TiXmlDocument to a Xml file
+int XmlJsonParser::writeXml(const QString out_file, TiXmlDocument xml_tree)
+{
+    TiXmlDeclaration* decl = new TiXmlDeclaration( "1.0", "", "" );
+
+    //add declartion to the beginning of the file
+    xml_tree.InsertBeforeChild(xml_tree.FirstChild(), decl);
+
+    //get generation's timestamp
+    QString cur_time = QDateTime::currentDateTime().toLocalTime().toString();
+
+    //add generatation timestamp as a comment after the declaration
+    TiXmlComment * comment = new TiXmlComment();
+    comment->SetValue("Generated at " + cur_time.toStdString());
+    xml_tree.InsertAfterChild(xml_tree.FirstChild(), comment);
+
+    //save to file
+    xml_tree.SaveFile(out_file.toStdString());
+
+    return 1;
+}
+
+//convert a QVariant-based structure to write-ready TiXmlDocument structure
+int XmlJsonParser::convertToTiXMLDoc(const QVariant json_tree, TiXmlDocument& xml_tree)
+{
+
+    return 1;
+}
+
+// read json file to a QString
+QString XmlJsonParser::readJsonFile(const QString in_file) {
+    QFile f(in_file);
+    if (!f.open(QFile::ReadOnly | QFile::Text)) {
+        qFatal("Cannot open the json file!");
+        return QString();
+    } else {
+        QTextStream in(&f);
+        return in.readAll();
+    }
 }
 
 /** convert from tree-like QVariant structure to TiXmlHandle structure
@@ -97,36 +131,4 @@ void mapQVariantToXML(const QVariant qvarmap_tree, TiXmlElement* xml_tree)
         //the code should never go here
         return;
     }
-}
-
-/* write an xml file */
-int writeXml(std::string a_sFileName, TiXmlElement* xml_tree)
-{
-    //add xml file declaration
-    TiXmlDocument doc;
-    TiXmlDeclaration* decl = new TiXmlDeclaration( "1.0", "", "" );
-    doc.LinkEndChild( decl );
-
-    //get generation's timestamp
-    QString cur_time = QDateTime::currentDateTime().toLocalTime().toString();
-
-    //add generatation timestamp as a comment
-    TiXmlComment * comment = new TiXmlComment();
-    comment->SetValue("Generated at " + cur_time.toStdString());
-    doc.LinkEndChild(comment);
-
-    //traverse through the root tree and append each element to the Doc
-    TiXmlElement* child_element = xml_tree->FirstChildElement();
-    while(child_element){
-        //link to the clone of the node
-        //since it does not allow multi-parents for a node (see the assert)
-        //assert( node->parent == 0 || node->parent == this );
-        doc.LinkEndChild(child_element->Clone());
-        child_element = child_element->NextSiblingElement();
-    }
-
-    //save to file
-    doc.SaveFile(a_sFileName);
-
-    return 1;
 }
