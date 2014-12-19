@@ -17,10 +17,14 @@ add_definitions(${QT_DEFINITIONS})
 
 #include source file in top folder
 file (GLOB XML_TO_JSON_SRCS
+     ${CMAKE_CURRENT_SOURCE_DIR}/xmljsonparser.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/xmljsonparser.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/xmltojson.cpp
      )
 
 file (GLOB JSON_TO_XML_SRCS
+     ${CMAKE_CURRENT_SOURCE_DIR}/xmljsonparser.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/xmljsonparser.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/jsontoxml.cpp
      )
 
